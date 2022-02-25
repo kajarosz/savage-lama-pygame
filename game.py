@@ -1,5 +1,5 @@
 import pygame
-from characters import Hero
+from characters import Hero, Food
 
 # Initiate game
 pygame.init()
@@ -17,12 +17,16 @@ clock = pygame.time.Clock()
 # Instantiate characters and projectiles
 lama = Hero(200, 580, 50)
 
+# Instantiate random food
+food = Food()
+
 # Redraw window function
 
 
 def redraw_window():
     window.blit(bg_pic, (0, 0))
     lama.draw(window)
+    food.draw(window)
     pygame.display.update()
 
 
