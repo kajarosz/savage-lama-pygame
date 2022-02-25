@@ -6,10 +6,14 @@ from random import randint
 
 class Hero(object):
     walk_right = [pygame.image.load('images/lama/lama_R1.png'), pygame.image.load('images/lama/lama_R2.png'),
-                 pygame.image.load('images/lama/lama_R3.png'), pygame.image.load('images/lama/lama_R4.png')]
+                  pygame.image.load('images/lama/lama_R3.png'), pygame.image.load('images/lama/lama_R4.png')]
     walk_left = [pygame.image.load('images/lama/lama_L1.png'), pygame.image.load('images/lama/lama_L2.png'),
                  pygame.image.load('images/lama/lama_L3.png'), pygame.image.load('images/lama/lama_L4.png')]
-    stand = pygame.image.load('images/lama/lama_F1.png')
+    stand = [pygame.image.load('images/lama/lama_R0.png'), pygame.image.load('images/lama/lama_L0.png')]
+    eat_right = [pygame.image.load('images/lama/lama_RE1.png'), pygame.image.load('images/lama/lama_RE2.png'),
+                 pygame.image.load('images/lama/lama_RE3.png'), pygame.image.load('images/lama/lama_RE4.png')]
+    eat_left = [pygame.image.load('images/lama/lama_LE1.png'), pygame.image.load('images/lama/lama_LE2.png'),
+                pygame.image.load('images/lama/lama_LE3.png'), pygame.image.load('images/lama/lama_LE4.png')]
 
     def __init__(self, x, y, width):
         self.x = x
@@ -22,22 +26,41 @@ class Hero(object):
         self.walk_count = 0
         self.jumping = False
         self.jump_height = 10
+        self.eating = False
+        self.eat_count = 0
 
-    def walk(self, window):
-        if not self.standing:
-            if self.walk_count + 1 >= 16:
-                self.walk_count = 0
+    def move(self, window):
+        if not self.eating:
+            if not self.standing:
+                if self.walk_count + 1 >= 16:
+                    self.walk_count = 0
+                if self.right:
+                    window.blit(self.walk_right[self.walk_count // 4], (self.x, self.y))
+                    self.walk_count += 1
+                elif self.left:
+                    window.blit(self.walk_left[self.walk_count // 4], (self.x, self.y))
+                    self.walk_count += 1
+            else:
+                if self.right:
+                    window.blit(self.stand[0], (self.x, self.y))
+                elif self.left:
+                    window.blit(self.stand[1], (self.x, self.y))
+
+    def eat(self, window):
+        if self.eating and self.standing:
             if self.right:
-                window.blit(self.walk_right[self.walk_count // 4], (self.x, self.y))
-                self.walk_count += 1
+                window.blit(self.eat_right[self.eat_count // 4], (self.x, self.y))
+                self.eat_count += 1
             elif self.left:
-                window.blit(self.walk_left[self.walk_count // 4], (self.x, self.y))
-                self.walk_count += 1
-        else:
-            window.blit(self.stand, (self.x, self.y))
+                window.blit(self.eat_left[self.eat_count // 4], (self.x - 16, self.y))
+                self.eat_count += 1
+        if self.eat_count + 1 >= 16:
+            self.eating = False
+            self.eat_count = 0
 
     def draw(self, window):
-        self.walk(window)
+        self.move(window)
+        self.eat(window)
 
 
 # Food class
