@@ -15,7 +15,7 @@ pygame.display.set_caption("Savage Lama Game")
 clock = pygame.time.Clock()
 
 # Instantiate characters and projectiles
-lama = Hero(200, 580)
+lama = Hero(200, 580, 50)
 
 # Redraw window function
 
@@ -39,18 +39,33 @@ while run:
     keys = pygame.key.get_pressed()
 
     # Move the character
-    if keys[pygame.K_RIGHT]:
+
+    if keys[pygame.K_RIGHT] and lama.x + lama.width + lama.speed < window_width:
         lama.x += lama.speed
         lama.right = True
         lama.left = False
         lama.standing = False
-    elif keys[pygame.K_LEFT]:
+    elif keys[pygame.K_LEFT] and lama.x - lama.speed > 0:
         lama.x -= lama.speed
         lama.right = False
         lama.left = True
         lama.standing = False
     else:
         lama.standing = True
+
+    if keys[pygame.K_UP]:
+        lama.jumping = True
+
+    if lama.jumping:
+        if lama.jump_height >= 0:
+            lama.y -= (lama.jump_height ** 2) * 0.5
+            lama.jump_height -= 1
+        elif -10 <= lama.jump_height < 0:
+            lama.y += (lama.jump_height ** 2) * 0.5
+            lama.jump_height -= 1
+        else:
+            lama.jumping = False
+            lama.jump_height = 10
 
     redraw_window()
 
