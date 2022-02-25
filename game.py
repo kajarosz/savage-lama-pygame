@@ -1,4 +1,5 @@
 import pygame
+import time
 from characters import Hero, Food
 
 # Initiate game
@@ -16,7 +17,7 @@ clock = pygame.time.Clock()
 fps = 16
 
 # Instantiate characters and projectiles
-lama = Hero(200, 580, 50)
+lama = Hero(200, 580)
 
 # Set variables to generate random food with fixed frequency
 food_freq = 10
@@ -63,12 +64,12 @@ while run:
 
     # Move the character
 
-    if keys[pygame.K_RIGHT] and lama.x + lama.width + lama.speed < window_width:
+    if keys[pygame.K_RIGHT] and not lama.eating and lama.x + lama.width + lama.speed < window_width:
         lama.x += lama.speed
         lama.right = True
         lama.left = False
         lama.standing = False
-    elif keys[pygame.K_LEFT] and lama.x - lama.speed > 0:
+    elif keys[pygame.K_LEFT] and not lama.eating and lama.x - lama.speed > 0:
         lama.x -= lama.speed
         lama.right = False
         lama.left = True
@@ -92,6 +93,15 @@ while run:
 
     if keys[pygame.K_DOWN] and lama.standing and not lama.jumping:
         lama.eating = True
+
+    # delete food if eaten
+    for food in food_list:
+        if lama.right and lama.eating and food.x < lama.x + lama.width_eating < food.x + food.width:
+            food.eaten()
+            food_list.pop(food_list.index(food))
+        elif lama.left and lama.eating and food.x < lama.x < food.x + food.width:
+            food.eaten()
+            food_list.pop(food_list.index(food))
 
     redraw_window()
 

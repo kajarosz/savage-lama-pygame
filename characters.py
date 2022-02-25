@@ -15,10 +15,12 @@ class Hero(object):
     eat_left = [pygame.image.load('images/lama/lama_LE1.png'), pygame.image.load('images/lama/lama_LE2.png'),
                 pygame.image.load('images/lama/lama_LE3.png'), pygame.image.load('images/lama/lama_LE4.png')]
 
-    def __init__(self, x, y, width):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.width = width
+        self.width = 50
+        self.width_eating = 66
+        self.height = 63
         self.speed = 5
         self.right = True
         self.left = False
@@ -28,6 +30,8 @@ class Hero(object):
         self.jump_height = 10
         self.eating = False
         self.eat_count = 0
+        self.hitbox = [self.x, self.y, self.x + self.width, self.y + self.height]
+        self.eatbox = [self.x, self.y, self.x + self.width_eating, self.y + self.height]
 
     def move(self, window):
         if not self.eating:
@@ -81,11 +85,15 @@ class Food(object):
         self.height = 32
         self.x = randint(5, 870)
         self.y = 614
+        self.eatbox = [self.x, self.y, self.x + self.width, self.y + self.height]
         self.type = randint(0, len(self.food_images) - 1)
         self.life = 160
 
     def display(self, window):
         window.blit(self.food_images[self.type], (self.x, self.y))
+
+    def eaten(self):
+        pass
 
     def draw(self, window):
         self.display(window)
