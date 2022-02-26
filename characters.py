@@ -1,10 +1,10 @@
 import pygame
-from random import randint
+from random import randint, getrandbits
 
 # Hero character class
 
 
-class Hero(object):
+class Lama(object):
     walk_right = [pygame.image.load('images/lama/lama_R1.png'), pygame.image.load('images/lama/lama_R2.png'),
                   pygame.image.load('images/lama/lama_R3.png'), pygame.image.load('images/lama/lama_R4.png')]
     walk_left = [pygame.image.load('images/lama/lama_L1.png'), pygame.image.load('images/lama/lama_L2.png'),
@@ -15,9 +15,9 @@ class Hero(object):
     eat_left = [pygame.image.load('images/lama/lama_LE1.png'), pygame.image.load('images/lama/lama_LE2.png'),
                 pygame.image.load('images/lama/lama_LE3.png'), pygame.image.load('images/lama/lama_LE4.png')]
 
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __init__(self):
+        self.x = 200
+        self.y = 580
         self.width = 50
         self.width_eating = 66
         self.height = 63
@@ -32,6 +32,7 @@ class Hero(object):
         self.eat_count = 0
         self.hitbox = [self.x, self.y, self.x + self.width, self.y + self.height]
         self.eatbox = [self.x, self.y, self.x + self.width_eating, self.y + self.height]
+        self.health_points = 0
 
     def move(self, window):
         if not self.eating:
@@ -67,6 +68,35 @@ class Hero(object):
         self.eat(window)
 
 
+# Hero lifes class
+
+class Life(object):
+    life_100 = pygame.image.load('images/life/life_100.png')
+    life_75 = pygame.image.load('images/life/life_75.png')
+    life_50 = pygame.image.load('images/life/life_50.png')
+    life_25 = pygame.image.load('images/life/life_25.png')
+    life_0 = pygame.image.load('images/life/life_0.png')
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.width = 27
+        self.height = 30
+        self.status = 100
+
+    def draw(self, window):
+        if self.status == 100:
+            window.blit(self.life_100, (self.x, self.y))
+        elif self.status == 75:
+            window.blit(self.life_75, (self.x, self.y))
+        elif self.status == 50:
+            window.blit(self.life_50, (self.x, self.y))
+        elif self.status == 25:
+            window.blit(self.life_25, (self.x, self.y))
+        else:
+            window.blit(self.life_0, (self.x, self.y))
+
+
 # Food class
 
 class Food(object):
@@ -87,13 +117,47 @@ class Food(object):
         self.y = 614
         self.eatbox = [self.x, self.y, self.x + self.width, self.y + self.height]
         self.type = randint(0, len(self.food_images) - 1)
-        self.life = 160
+        self.life = randint(80, 1440)
 
     def display(self, window):
         window.blit(self.food_images[self.type], (self.x, self.y))
 
-    def eaten(self):
-        pass
-
     def draw(self, window):
         self.display(window)
+
+
+# Chicken enemy class
+
+class Chicken(object):
+    walk_right = [pygame.image.load('images/chicken/chicken_R1.png'),
+                  pygame.image.load('images/chicken/chicken_R2.png'),
+                  pygame.image.load('images/chicken/chicken_R3.png'),
+                  pygame.image.load('images/chicken/chicken_R4.png')]
+    walk_left = [pygame.image.load('images/chicken/chicken_L1.png'),
+                 pygame.image.load('images/chicken/chicken_L2.png'),
+                 pygame.image.load('images/chicken/chicken_L3.png'),
+                 pygame.image.load('images/chicken/chicken_L4.png')]
+
+    def __init__(self):
+        self.x = 400
+        self.y = 618
+        self.right = bool(getrandbits(1))
+        self.left = not self.right
+        self.vel = 3
+        self.walk_count = 0
+        self.steps = 0
+        self.path = 50
+
+    def move(self, window):
+        if self.walk_count + 1 >= 16:
+            self.walk_count = 0
+        if self.left:
+            window.blit(self.walk_left[self.walk_count // 4], (self.x, self.y))
+            self.walk_count += 1
+        else:
+            window.blit(self.walk_right[self.walk_count // 4], (self.x, self.y))
+            self.walk_count += 1
+
+    def draw(self, window):
+        self.move(window)
+
