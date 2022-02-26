@@ -35,6 +35,11 @@ life_space = 3
 for i in range(0, life_no):
     life_list.append(Life((20 + i * (life_width + life_space)), 20))
 
+# Generate red transparent background fill
+s = pygame.Surface((window_width, window_height))
+s.set_alpha(128)
+s.fill((255, 0, 0))
+
 # Redraw window function
 
 
@@ -42,11 +47,25 @@ def redraw_window():
     window.blit(bg_pic, (0, 0))
     for food in food_list:
         food.draw(window)
-    lama.draw(window)
+    lama.draw(window, s)
     for life in life_list:
         life.draw(window)
     chicken.draw(window)
     pygame.display.update()
+
+
+def life_reduce():
+    for life in reversed(life_list):
+        if life.status == 0:
+            continue
+        else:
+            life.status -= 25
+            break
+    if life_list[0].status == 0:
+        run = False
+    else:
+        run = True
+    return run
 
 
 # Main game loop
@@ -134,11 +153,21 @@ while run:
             chicken.left = True
             chicken.right = False
     if chicken.left:
-        chicken.x -= chicken.vel
+        chicken.x -= chicken.speed
         chicken.steps += 1
     elif chicken.right:
-        chicken.x += chicken.vel
+        chicken.x += chicken.speed
         chicken.steps += 1
+
+    # lama hit by chicken
+    if not lama.protected:
+        if chicken.x < lama.x + lama.width < chicken.x + chicken.width:
+            lama.protected = True
+            life_reduce()
+        elif chicken.x < lama.x < chicken.x + chicken.width:
+            lama.protected = True
+            life_reduce()
+
 
     # Redraw game window
     redraw_window()

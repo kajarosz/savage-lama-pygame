@@ -17,11 +17,11 @@ class Lama(object):
 
     def __init__(self):
         self.x = 200
-        self.y = 580
+        self.y = 582
         self.width = 50
         self.width_eating = 66
         self.height = 63
-        self.speed = 5
+        self.speed = 6
         self.right = True
         self.left = False
         self.standing = True
@@ -30,9 +30,9 @@ class Lama(object):
         self.jump_height = 10
         self.eating = False
         self.eat_count = 0
-        self.hitbox = [self.x, self.y, self.x + self.width, self.y + self.height]
-        self.eatbox = [self.x, self.y, self.x + self.width_eating, self.y + self.height]
         self.health_points = 0
+        self.protected = False
+        self.protection_count = 0
 
     def move(self, window):
         if not self.eating:
@@ -63,9 +63,19 @@ class Lama(object):
             self.eating = False
             self.eat_count = 0
 
-    def draw(self, window):
+    def hit(self, window, s):
+        if self.protected:
+            if self.protection_count >= 32:
+                self.protected = False
+                self.protection_count = 0
+            else:
+                window.blit(s, (0, 0))
+                self.protection_count += 1
+
+    def draw(self, window, s):
         self.move(window)
         self.eat(window)
+        self.hit(window, s)
 
 
 # Hero lifes class
@@ -141,9 +151,11 @@ class Chicken(object):
     def __init__(self):
         self.x = 400
         self.y = 618
+        self.width = 33
+        self.height = 27
         self.right = bool(getrandbits(1))
         self.left = not self.right
-        self.vel = 3
+        self.speed = 3
         self.walk_count = 0
         self.steps = 0
         self.path = 50
