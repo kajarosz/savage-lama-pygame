@@ -33,6 +33,7 @@ class Lama(object):
         self.health_points = 0
         self.protected = False
         self.protection_count = 0
+        self.score = 0
 
     def move(self, window):
         if not self.eating:

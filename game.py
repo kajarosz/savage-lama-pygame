@@ -16,9 +16,16 @@ pygame.display.set_caption("Savage Lama Game")
 clock = pygame.time.Clock()
 fps = 16
 
-# Instantiate characters, enemies and projectiles
+# Instantiate lama
 lama = Lama()
-chicken = Chicken()
+
+# Set variables to generate chickens
+chicken_freq = 10
+chicken_max = 2
+generate_chicken = [0 for i in range(0, fps * chicken_freq - 1)]
+generate_chicken.append(1)
+chicken_timer = 0
+chicken_list = []
 
 # Set variables to generate random food with fixed frequency
 food_freq = 10
@@ -40,6 +47,9 @@ s = pygame.Surface((window_width, window_height))
 s.set_alpha(128)
 s.fill((255, 0, 0))
 
+# Set font for score
+font = pygame.font.SysFont('comicsans', 30, True)
+
 # Redraw window function
 
 
@@ -50,7 +60,10 @@ def redraw_window():
     lama.draw(window, s)
     for life in life_list:
         life.draw(window)
-    chicken.draw(window)
+    for chicken in chicken_list:
+        chicken.draw(window)
+    text = font.render('SCORE: ' + str(lama.score), 1, (0, 0, 0))
+    window.blit(text, (720, 10))
     pygame.display.update()
 
 
@@ -78,16 +91,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-    # Generate random food
 
-    if food_timer < fps * food_freq:
-        if generate_food[food_timer] and len(food_list) < 6:
-            food_list.append(Food())
-            food_timer += 1
-        else:
-            food_timer += 1
-    else:
-        food_timer = 0
 
     # Get key commands
 
@@ -127,6 +131,16 @@ while run:
         lama.eating = True
 
     # FOOD
+    # Generate random food
+    if food_timer < fps * food_freq:
+        if generate_food[food_timer] and len(food_list) < 6:
+            food_list.append(Food())
+            food_timer += 1
+        else:
+            food_timer += 1
+    else:
+        food_timer = 0
+
     for food in food_list:
         # delete food after 15 s
         if food.life >= 0:
@@ -143,31 +157,50 @@ while run:
             lama.health_points += 1
 
     # ENEMY - CHICKEN
-    # chicken moving
-    if chicken.steps >= chicken.path:
-        chicken.steps = 0
+    # Generate chickens
+    if chicken_timer < fps * chicken_freq:
+        if generate_chicken[chicken_timer] and len(chicken_list) <= chicken_max:
+            chicken_list.append(Chicken())
+            chicken_timer += 1
+        else:
+            chicken_timer += 1
+    else:
+        chicken_timer = 0
+
+    for chicken in chicken_list:
+        # chicken moving
+        if chicken.steps >= chicken.path:
+            chicken.steps = 0
+            if chicken.left:
+                chicken.left = False
+                chicken.right = True
+            elif chicken.right:
+                chicken.left = True
+                chicken.right = False
         if chicken.left:
-            chicken.left = False
-            chicken.right = True
+            chicken.x -= chicken.speed
+            chicken.steps += 1
         elif chicken.right:
-            chicken.left = True
-            chicken.right = False
-    if chicken.left:
-        chicken.x -= chicken.speed
-        chicken.steps += 1
-    elif chicken.right:
-        chicken.x += chicken.speed
-        chicken.steps += 1
+            chicken.x += chicken.speed
+            chicken.steps += 1
 
-    # lama hit by chicken
-    if not lama.protected:
-        if chicken.x < lama.x + lama.width < chicken.x + chicken.width:
-            lama.protected = True
-            life_reduce()
-        elif chicken.x < lama.x < chicken.x + chicken.width:
-            lama.protected = True
-            life_reduce()
+        # chicken hit by lama
+        if chicken.y < lama.y + lama.height:
+            if chicken.x < lama.x + lama.width < chicken.x + chicken.width:
+                lama.score += 1
+                chicken_list.pop(chicken_list.index(chicken))
+            elif chicken.x < lama.x < chicken.x + chicken.width:
+                lama.score += 1
+                chicken_list.pop(chicken_list.index(chicken))
 
+        # lama hit by chicken
+        if not lama.protected and not lama.jumping:
+            if chicken.x < lama.x + lama.width < chicken.x + chicken.width:
+                lama.protected = True
+                life_reduce()
+            elif chicken.x < lama.x < chicken.x + chicken.width:
+                lama.protected = True
+                life_reduce()
 
     # Redraw game window
     redraw_window()
