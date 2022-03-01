@@ -233,22 +233,17 @@ while run:
             chicken.steps += 1
 
         # lama interacts with chicken
-        if chicken.x < lama.x + lama.width < chicken.x + chicken.width:
-            if chicken.y < lama.y + lama.height:
-                if lama.jumping or lama.running:
-                    lama.score += 1
-                    chicken_list.pop(chicken_list.index(chicken))
-            elif not lama.jumping and not lama.protected:
+        if lama.x < chicken.x + chicken.width and lama.x + lama.width > chicken.x:
+            if lama.running:
+                lama.score += 1
+                chicken_list.pop(chicken_list.index(chicken))
+            elif lama.jumping and lama.y < chicken.y + chicken.height and lama.y + lama.height > chicken.y:
+                lama.score += 1
+                chicken_list.pop(chicken_list.index(chicken))
+            elif not lama.protected and not lama.jumping:
                 lama.protected = True
                 life_reduce()
-        elif chicken.x < lama.x < chicken.x + chicken.width:
-            if chicken.y < lama.y + lama.height:
-                if lama.jumping or lama.running:
-                    lama.score += 1
-                    chicken_list.pop(chicken_list.index(chicken))
-            elif not lama.jumping and not lama.protected:
-                lama.protected = True
-                life_reduce()
+
 
     # Redraw game window
     redraw_window()
