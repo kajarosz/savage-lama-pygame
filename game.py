@@ -43,15 +43,23 @@ for i in range(0, life_no):
     life_list.append(Life((20 + i * (life_width + life_space)), 20))
 
 # Generate red transparent background fill
-s = pygame.Surface((window_width, window_height))
-s.set_alpha(128)
-s.fill((255, 0, 0))
+red_bg = pygame.Surface((window_width, window_height))
+red_bg.set_alpha(128)
+red_bg.fill((255, 0, 0))
+
+# Generate black transparent background fill
+black_bg = pygame.Surface((window_width, window_height))
+black_bg.set_alpha(128)
+black_bg.fill((0, 0, 0))
 
 # Set font for score
 font_score = pygame.font.SysFont('comicsans', 30, True)
 
 # Set font for health points
 font_health = pygame.font.SysFont('comicsans', 14, True)
+
+# Set font for game over
+font_game_over = pygame.font.SysFont('comicsans', 60, True)
 
 # Redraw window function
 
@@ -60,7 +68,7 @@ def redraw_window():
     window.blit(bg_pic, (0, 0))
     for food in food_list:
         food.draw(window)
-    lama.draw(window, s)
+    lama.draw(window, red_bg)
     for life in life_list:
         life.draw(window)
     for chicken in chicken_list:
@@ -69,6 +77,11 @@ def redraw_window():
     window.blit(text_score, (720, 10))
     text_health = font_health.render('REGAIN LIFE: ' + str(lama.health_points) + ' / 5', 1, (0, 0, 0))
     window.blit(text_health, (20, 50))
+    if game_over:
+        window.blit(black_bg, (0, 0))
+        text_game_over = font_game_over.render('GAME OVER', 1, (255, 0, 0))
+        window.blit(text_game_over, ((window_width - 364) / 2, (window_height - 46) / 2))
+        window.blit(text_score, ((window_width - 146) / 2, (window_height - 28) / 2 + 80))
     pygame.display.update()
 
 
@@ -87,6 +100,7 @@ def life_reduce():
 
 
 # Main game loop
+game_over = False
 run = True
 while run:
     clock.tick(fps)
@@ -225,6 +239,23 @@ while run:
     # Redraw game window
     redraw_window()
 
-# Quit game
+    # Game over
+    if life_list[0].status == 0:
+        run = False
+        game_over = True
+        lama.protected = False
+        for chicken in chicken_list:
+            chicken.standing = True
 
+while game_over:
+    clock.tick(fps)
+
+    # Exit the game
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            game_over = False
+
+    redraw_window()
+
+# Quit game
 pygame.quit()

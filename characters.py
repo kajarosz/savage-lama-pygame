@@ -66,7 +66,7 @@ class Lama(object):
 
     def hit(self, window, s):
         if self.protected:
-            if self.protection_count >= 32:
+            if self.protection_count >= 48:
                 self.protected = False
                 self.protection_count = 0
             else:
@@ -160,16 +160,23 @@ class Chicken(object):
         self.walk_count = 0
         self.steps = 0
         self.path = 50
+        self.standing = False
 
     def move(self, window):
-        if self.walk_count + 1 >= 16:
-            self.walk_count = 0
-        if self.left:
-            window.blit(self.walk_left[self.walk_count // 4], (self.x, self.y))
-            self.walk_count += 1
+        if not self.standing:
+            if self.walk_count + 1 >= 16:
+                self.walk_count = 0
+            if self.left:
+                window.blit(self.walk_left[self.walk_count // 4], (self.x, self.y))
+                self.walk_count += 1
+            elif self.right:
+                window.blit(self.walk_right[self.walk_count // 4], (self.x, self.y))
+                self.walk_count += 1
         else:
-            window.blit(self.walk_right[self.walk_count // 4], (self.x, self.y))
-            self.walk_count += 1
+            if self.left:
+                window.blit(self.walk_left[0], (self.x, self.y))
+            elif self.right:
+                window.blit(self.walk_right[0], (self.x, self.y))
 
     def draw(self, window):
         self.move(window)
