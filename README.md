@@ -7,7 +7,7 @@ Let me know, if you enjoyed the game!
 
 HOW TO PLAY:
 
-comming soon
+Fork or download all files. Run file game.exe by doubleclicking. No python installation needed - you can share it with all your friends.
 
 CONTROLS:
 * K_LEFT:  go left
