@@ -121,10 +121,10 @@ class Food(object):
                    pygame.image.load('images/food/pepper_yellow.png'), pygame.image.load('images/food/pineapple.png'),
                    pygame.image.load('images/food/radish.png'), pygame.image.load('images/food/strawberry.png')]
 
-    def __init__(self):
+    def __init__(self, x):
         self.width = 32
         self.height = 32
-        self.x = randint(5, 870)
+        self.x = x
         self.y = 614
         self.eatbox = [self.x, self.y, self.x + self.width, self.y + self.height]
         self.type = randint(0, len(self.food_images) - 1)
