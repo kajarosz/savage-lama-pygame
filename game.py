@@ -92,12 +92,6 @@ def life_reduce():
         else:
             life.status -= 25
             break
-    if life_list[0].status == 0:
-        run = False
-    else:
-        run = True
-    return run
-
 
 # Main game loop
 game_over = False
@@ -131,8 +125,25 @@ while run:
     else:
         lama.standing = True
 
+    # character running
+    if keys[pygame.K_SPACE] and not lama.eating and not lama.jumping:
+        lama.running = True
+    if lama.running:
+        if lama.right:
+            if lama.x + lama.width + lama.super_speed < window_width:
+                lama.x += lama.super_speed
+                lama.standing = False
+            else:
+                lama.running = False
+        elif lama.left:
+            if lama.x - lama.super_speed > 0:
+                lama.x -= lama.super_speed
+                lama.standing = False
+            else:
+                lama.running = False
+
     # character jumping
-    if keys[pygame.K_UP] and not lama.eating:
+    if keys[pygame.K_UP] and not lama.eating and not lama.running:
         lama.jumping = True
     if lama.jumping:
         if lama.jump_height >= 0:
@@ -221,17 +232,20 @@ while run:
             chicken.x += chicken.speed
             chicken.steps += 1
 
+        # lama interacts with chicken
         if chicken.x < lama.x + lama.width < chicken.x + chicken.width:
-            if lama.jumping and chicken.y < lama.y + lama.height:
-                lama.score += 1
-                chicken_list.pop(chicken_list.index(chicken))
+            if chicken.y < lama.y + lama.height:
+                if lama.jumping or lama.running:
+                    lama.score += 1
+                    chicken_list.pop(chicken_list.index(chicken))
             elif not lama.jumping and not lama.protected:
                 lama.protected = True
                 life_reduce()
         elif chicken.x < lama.x < chicken.x + chicken.width:
-            if lama.jumping and chicken.y < lama.y + lama.height:
-                lama.score += 1
-                chicken_list.pop(chicken_list.index(chicken))
+            if chicken.y < lama.y + lama.height:
+                if lama.jumping or lama.running:
+                    lama.score += 1
+                    chicken_list.pop(chicken_list.index(chicken))
             elif not lama.jumping and not lama.protected:
                 lama.protected = True
                 life_reduce()

@@ -22,9 +22,11 @@ class Lama(object):
         self.width_eating = 66
         self.height = 63
         self.speed = 6
+        self.super_speed = 20
         self.right = True
         self.left = False
         self.standing = True
+        self.running = False
         self.walk_count = 0
         self.jumping = False
         self.jump_height = 10
