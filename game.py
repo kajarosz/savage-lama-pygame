@@ -1,5 +1,5 @@
 import pygame
-from random import randint
+from random import randint, choice
 from characters import Lama, Food, Life, Chicken
 
 # Initiate game
@@ -48,7 +48,10 @@ s.set_alpha(128)
 s.fill((255, 0, 0))
 
 # Set font for score
-font = pygame.font.SysFont('comicsans', 30, True)
+font_score = pygame.font.SysFont('comicsans', 30, True)
+
+# Set font for health points
+font_health = pygame.font.SysFont('comicsans', 14, True)
 
 # Redraw window function
 
@@ -62,8 +65,10 @@ def redraw_window():
         life.draw(window)
     for chicken in chicken_list:
         chicken.draw(window)
-    text = font.render('SCORE: ' + str(lama.score), 1, (0, 0, 0))
-    window.blit(text, (720, 10))
+    text_score = font_score.render('SCORE: ' + str(lama.score), 1, (0, 0, 0))
+    window.blit(text_score, (720, 10))
+    text_health = font_health.render('REGAIN LIFE: ' + str(lama.health_points) + ' / 5', 1, (0, 0, 0))
+    window.blit(text_health, (20, 50))
     pygame.display.update()
 
 
@@ -170,7 +175,15 @@ while run:
     # Generate chickens
     if chicken_timer < fps * chicken_freq:
         if generate_chicken[chicken_timer] and len(chicken_list) <= chicken_max:
-            chicken_list.append(Chicken())
+            chicken_available_x_list = [i for i in range(5, window_width - 33 - 210 - 5)]
+            chicken_unavailable_x_list = [i for i in range(lama.x - 50, lama.x + lama.width + 50)]
+            for x in chicken_unavailable_x_list:
+                try:
+                    chicken_available_x_list.pop(chicken_available_x_list.index(x))
+                except ValueError:
+                    continue
+            random_chicken_x = choice(chicken_available_x_list)
+            chicken_list.append(Chicken(random_chicken_x))
             chicken_timer += 1
         else:
             chicken_timer += 1

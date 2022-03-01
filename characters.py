@@ -1,5 +1,5 @@
 import pygame
-from random import randint, getrandbits
+from random import randint
 
 # Hero character class
 
@@ -149,13 +149,13 @@ class Chicken(object):
                  pygame.image.load('images/chicken/chicken_L3.png'),
                  pygame.image.load('images/chicken/chicken_L4.png')]
 
-    def __init__(self):
-        self.x = 400
+    def __init__(self, x):
+        self.x = x
         self.y = 618
         self.width = 33
         self.height = 27
-        self.right = bool(getrandbits(1))
-        self.left = not self.right
+        self.right = True
+        self.left = False
         self.speed = 3
         self.walk_count = 0
         self.steps = 0
