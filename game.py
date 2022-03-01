@@ -1,6 +1,6 @@
 import pygame
 from random import randint, choice
-from characters import Lama, Food, Life, Chicken
+from characters import Lama, Food, Life, Chicken, Potion, SpeedUp
 
 # Initiate game
 pygame.init()
@@ -34,13 +34,28 @@ generate_food.append(1)
 food_timer = 0
 food_list = [Food(randint(5, 870))]
 
-# Generate health hearts
+# Set variables to generate potion with fixed frequency
+potion_freq = 20
+generate_potion = [0 for i in range(0, fps * potion_freq - 1)]
+generate_potion.append(1)
+potion_timer = 0
+potion_list = [Potion(randint(5, 870))]
+
+# Generate Life status
 life_no = 5
 life_list = []
 life_width = 27
 life_space = 3
 for i in range(0, life_no):
     life_list.append(Life((20 + i * (life_width + life_space)), 20))
+
+# Generate Speed Up Potions status
+speedup_no = 3
+speedup_list = []
+speedup_width = 17
+speedup_space = 3
+for i in range(0, speedup_no):
+    speedup_list.append(SpeedUp((420 + i * (speedup_width + speedup_space)), 20))
 
 # Generate red transparent background fill
 red_bg = pygame.Surface((window_width, window_height))
@@ -68,9 +83,13 @@ def redraw_window():
     window.blit(bg_pic, (0, 0))
     for food in food_list:
         food.draw(window)
+    for potion in potion_list:
+        potion.draw(window)
     lama.draw(window, red_bg)
     for life in life_list:
         life.draw(window)
+    for speedup  in speedup_list:
+        speedup.draw(window)
     for chicken in chicken_list:
         chicken.draw(window)
     text_score = font_score.render('SCORE: ' + str(lama.score), 1, (0, 0, 0))
@@ -127,7 +146,13 @@ while run:
 
     # character running
     if keys[pygame.K_SPACE] and not lama.eating and not lama.jumping:
-        lama.running = True
+        for speedup in reversed(speedup_list):
+            if speedup.full:
+                lama.running = True
+                speedup.full = False
+                break
+            else:
+                continue
     if lama.running:
         if lama.right:
             if lama.x + lama.width + lama.super_speed < window_width:
@@ -172,7 +197,7 @@ while run:
         food_timer = 0
 
     for food in food_list:
-        # delete food after 15 s
+        # delete food after it's life expires
         if food.life >= 0:
             food.life -= 1
         else:
@@ -195,6 +220,35 @@ while run:
                     break
                 else:
                     continue
+
+        # POTION
+        # Generate potion
+        if potion_timer < fps * potion_freq:
+            if generate_potion[potion_timer] and len(potion_list) < 2:
+                potion_list.append(Potion(randint(5, 870)))
+                potion_timer += 1
+            else:
+                potion_timer += 1
+        else:
+            potion_timer = 0
+
+        for potion in potion_list:
+            # delete potion after it's life expires
+            if potion.life >= 0:
+                potion.life -= 1
+            else:
+                potion_list.pop(potion_list.index(potion))
+
+            # delete potion if taken
+            if keys[pygame.K_z]:
+                if lama.x < potion.x + potion.width and lama.x + lama.width > potion.x:
+                    potion_list.pop(potion_list.index(potion))
+                    for speedup in speedup_list:
+                        if not speedup.full:
+                            speedup.full = True
+                            break
+                        else:
+                            continue
 
     # ENEMY - CHICKEN
     # Generate chickens

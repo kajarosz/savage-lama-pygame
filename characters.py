@@ -93,8 +93,6 @@ class Life(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.width = 27
-        self.height = 30
         self.status = 100
 
     def draw(self, window):
@@ -108,6 +106,43 @@ class Life(object):
             window.blit(self.life_25, (self.x, self.y))
         else:
             window.blit(self.life_0, (self.x, self.y))
+
+
+# Potion status class
+
+class SpeedUp(object):
+    image_full = pygame.image.load('images/potion/potion_full.png')
+    image_empty = pygame.image.load('images/potion/potion_empty.png')
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.full = False
+
+    def draw(self, window):
+        if self.full:
+            window.blit(self.image_full, (self.x, self.y))
+        else:
+            window.blit(self.image_empty, (self.x, self.y))
+
+
+# Potion class
+
+class Potion(object):
+    image_full = pygame.image.load('images/potion/potion_full.png')
+
+    def __init__(self, x):
+        self.x = x
+        self.y = 614
+        self.height = 32
+        self.width = 17
+        self.life = 200
+
+    def display(self, window):
+        window.blit(self.image_full, (self.x, self.y))
+
+    def draw(self, window):
+        self.display(window)
 
 
 # Food class
@@ -128,7 +163,6 @@ class Food(object):
         self.height = 32
         self.x = x
         self.y = 614
-        self.eatbox = [self.x, self.y, self.x + self.width, self.y + self.height]
         self.type = randint(0, len(self.food_images) - 1)
         self.life = randint(80, 1440)
 
