@@ -88,7 +88,7 @@ def redraw_window():
     lama.draw(window, red_bg)
     for life in life_list:
         life.draw(window)
-    for speedup  in speedup_list:
+    for speedup in speedup_list:
         speedup.draw(window)
     for chicken in chicken_list:
         chicken.draw(window)
@@ -111,6 +111,7 @@ def life_reduce():
         else:
             life.status -= 25
             break
+
 
 # Main game loop
 game_over = False
@@ -145,14 +146,12 @@ while run:
         lama.standing = True
 
     # character running
-    if keys[pygame.K_SPACE] and not lama.eating and not lama.jumping:
+    if keys[pygame.K_SPACE] and not lama.eating and not lama.jumping and not lama.running:
         for speedup in reversed(speedup_list):
             if speedup.full:
                 lama.running = True
                 speedup.full = False
                 break
-            else:
-                continue
     if lama.running:
         if lama.right:
             if lama.x + lama.width + lama.super_speed < window_width:
