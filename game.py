@@ -133,11 +133,15 @@ while run:
     # CHARACTER
     # character moving
     if keys[pygame.K_RIGHT] and not lama.eating and lama.x + lama.width + lama.speed < window_width:
+        if lama.running and lama.left:
+            lama.running = False
         lama.x += lama.speed
         lama.right = True
         lama.left = False
         lama.standing = False
     elif keys[pygame.K_LEFT] and not lama.eating and lama.x - lama.speed > 0:
+        if lama.running and lama.right:
+            lama.running = False
         lama.x -= lama.speed
         lama.right = False
         lama.left = True
